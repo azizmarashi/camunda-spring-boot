@@ -36,7 +36,7 @@ public class TestService {
 //    @Override
     public List<QuestionnaireInboxItem> searchClaimableTasks(ClaimableTasksSearchParams params) {
         TaskQuery taskQuery = taskService.createTaskQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .taskCandidateGroup(params.getRoleName());
 
         addAgentCriteria(taskQuery);
@@ -46,7 +46,7 @@ public class TestService {
     }
 
     private void addAgentCriteria(TaskQuery taskQuery) {
-        String currentAgentCode = InsuranceSecurityUtils.getUser().getAgentCode();
+        String currentAgentCode = InsuranceSecurityUtils.getUser().getAgentCode();//long
         if (UserRoleBean.isBranch()) {
             taskQuery.processVariableValueEquals("branchCode", currentAgentCode);
         }
@@ -54,7 +54,7 @@ public class TestService {
             taskQuery.processVariableValueEquals("provinceCode", currentAgentCode);
         }
         if (UserRoleBean.isGeneralAgent()) {
-            String currentAgentSubCode = InsuranceSecurityUtils.getUser().getAgentCode();
+            String currentAgentSubCode = InsuranceSecurityUtils.getUser().getAgentCode();//long
             taskQuery.processVariableValueEquals("agentCode", currentAgentCode)
                     .processVariableValueEquals("agentSubCode", currentAgentSubCode);
         }
@@ -64,7 +64,7 @@ public class TestService {
     public List<QuestionnaireInboxItem> myAssignedTasks(MyAssignedTasksSearchParams searchParams) {
         TaskQuery taskQuery = taskService.createTaskQuery()
 //                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
-                .taskAssignee(InsuranceSecurityUtils.getUser().getUsername());
+                .taskAssignee(InsuranceSecurityUtils.getUser().getUsername());//string
 
         addSearchParamsCriteria(taskQuery, searchParams);
 
@@ -75,7 +75,7 @@ public class TestService {
     public List<QuestionnaireInboxItem> myActiveInitiatedTasks(MyInitiatedSearchParams searchParams) {
         TaskQuery taskQuery = taskService.createTaskQuery()
 //                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
-                .processVariableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())
+                .processVariableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())//string
                 .active();
         addSearchParamsCriteria(taskQuery, searchParams);
 
@@ -86,7 +86,7 @@ public class TestService {
     public List<QuestionnaireInboxItem> myCompletedInitiatedTasks(MyInitiatedSearchParams searchParams) {
         HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery()
 //                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
-                .variableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())
+                .variableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())//string
                 .finished();
 
         if (StringUtils.isNotEmpty(searchParams.getQuestionnaireCode())) {
@@ -129,7 +129,7 @@ public class TestService {
 
     private QuestionnaireInboxItem inboxItemFromTask(Task task) {
         Map<String, Object> collect = runtimeService.createVariableInstanceQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .processInstanceIdIn(task.getProcessInstanceId())
                 .list().stream()
                 .filter(var -> var.getName() != null)
@@ -151,7 +151,7 @@ public class TestService {
 
 //    @Override
     public void claimTask(String taskId) {
-        taskService.claim(taskId, InsuranceSecurityUtils.getUser().getUsername());
+        taskService.claim(taskId, InsuranceSecurityUtils.getUser().getUsername());//string
     }
 
 //    @Override
