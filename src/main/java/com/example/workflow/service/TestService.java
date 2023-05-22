@@ -63,7 +63,7 @@ public class TestService {
 //    @Override
     public List<QuestionnaireInboxItem> myAssignedTasks(MyAssignedTasksSearchParams searchParams) {
         TaskQuery taskQuery = taskService.createTaskQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .taskAssignee(InsuranceSecurityUtils.getUser().getUsername());
 
         addSearchParamsCriteria(taskQuery, searchParams);
@@ -74,7 +74,7 @@ public class TestService {
 //    @Override
     public List<QuestionnaireInboxItem> myActiveInitiatedTasks(MyInitiatedSearchParams searchParams) {
         TaskQuery taskQuery = taskService.createTaskQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .processVariableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())
                 .active();
         addSearchParamsCriteria(taskQuery, searchParams);
@@ -85,7 +85,7 @@ public class TestService {
 //    @Override
     public List<QuestionnaireInboxItem> myCompletedInitiatedTasks(MyInitiatedSearchParams searchParams) {
         HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .variableValueEquals("initiator", InsuranceSecurityUtils.getUser().getUsername())
                 .finished();
 
@@ -140,7 +140,7 @@ public class TestService {
 
     private QuestionnaireInboxItem inboxItemFromProcessInstance(HistoricProcessInstance isntance) {
         Map<String, Object> collect = historyService.createHistoricVariableInstanceQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .processInstanceIdIn(isntance.getId())
                 .list().stream()
                 .filter(var -> var.getName() != null)
@@ -157,7 +157,7 @@ public class TestService {
 //    @Override
     public List<WorkflowStep> getWorkflowStepsFor(String processInstanceId) {
         List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
-                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
+//                .tenantIdIn(InsuranceSystemEnum.getCurrentSystemCode())
                 .processInstanceId(processInstanceId)
                 .taskAssigned()
                 .orderByHistoricActivityInstanceStartTime()
