@@ -1,37 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0fr9mxs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.4.1">
-  <bpmn:process id="TestCamunda" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" camunda:initiator="initiator">
-      <bpmn:outgoing>SequenceFlow_1fp17al</bpmn:outgoing>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0fr9mxs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.4.1">
+  <bpmn:collaboration id="Collaboration_17o4iug">
+    <bpmn:participant id="vacationrequest" name="فرایند درخواست مرخصی" processRef="vacation-process" />
+  </bpmn:collaboration>
+  <bpmn:process id="vacation-process" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1445rg5">
+      <bpmn:lane id="Lane_0otfnty" name="مدیریت واحد">
+        <bpmn:flowNodeRef>decisionMaking</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>perceptionReqquest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0nkezcp</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1cx407t</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_1bm6x7h" name="متقاضی">
+        <bpmn:flowNodeRef>startProcess</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>writeRequest</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="startProcess" name="تقاضای مرخصی" camunda:asyncBefore="true" camunda:initiator="starter">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>SequenceFlow_17ddwv2</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1fp17al" sourceRef="StartEvent_1" targetRef="say-hello" />
-    <bpmn:endEvent id="EndEvent_0x6ir2l">
-      <bpmn:incoming>SequenceFlow_16gzt2m</bpmn:incoming>
+    <bpmn:exclusiveGateway id="decisionMaking" name="تصمیم گیری" camunda:asyncBefore="true">
+      <bpmn:incoming>SequenceFlow_0jb05bw</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_110gnb1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1y6ey5v</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="perceptionReqquest" name="مشاهده درخواست توسط مسئول" camunda:asyncBefore="true" camunda:assignee="modir1">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="name" label="نام متقاضی" type="string" />
+          <camunda:formField id="family" label="نام خانوادگی متقاضی" type="string" />
+          <camunda:formField id="fromDate" label="تاریخ شروع مرخصی" type="date" />
+          <camunda:formField id="toDate" label="تاریخ پایان مرخصی" type="date" />
+          <camunda:formField id="result" label="نتیجه" type="enum">
+            <camunda:value id="accept" name="تایید" />
+            <camunda:value id="reject" name="رد" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0000cfe</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0jb05bw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_0nkezcp" name="پاسخ موافقت با مرخصی" camunda:asyncBefore="true">
+      <bpmn:incoming>SequenceFlow_110gnb1</bpmn:incoming>
+      <bpmn:messageEventDefinition />
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_16gzt2m" sourceRef="say-hello" targetRef="EndEvent_0x6ir2l" />
-    <bpmn:userTask id="say-hello" name="Say hello to&#10;demo" camunda:assignee="user1">
-      <bpmn:incoming>SequenceFlow_1fp17al</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_16gzt2m</bpmn:outgoing>
+    <bpmn:sequenceFlow id="SequenceFlow_17ddwv2" sourceRef="startProcess" targetRef="writeRequest" />
+    <bpmn:sequenceFlow id="SequenceFlow_0000cfe" sourceRef="writeRequest" targetRef="perceptionReqquest" />
+    <bpmn:sequenceFlow id="SequenceFlow_0jb05bw" sourceRef="perceptionReqquest" targetRef="decisionMaking" />
+    <bpmn:sequenceFlow id="SequenceFlow_110gnb1" name="موافقت" sourceRef="decisionMaking" targetRef="EndEvent_0nkezcp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${result=='accept'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1y6ey5v" name="عدم موافت" sourceRef="decisionMaking" targetRef="Event_1cx407t">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${result=='reject'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1cx407t" name="پاسخ عدم موافقت با مرخصی">
+      <bpmn:incoming>Flow_1y6ey5v</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0p1r4l1" />
+    </bpmn:endEvent>
+    <bpmn:userTask id="writeRequest" name="نگارش نامه درخواست مرخصی" camunda:asyncBefore="true" camunda:assignee="karmand1">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="name" label="نام" type="string" />
+          <camunda:formField id="family" label="نام خانوادگی" type="string" />
+          <camunda:formField id="fromDate" label="از تاریخ" type="date" />
+          <camunda:formField id="toDate" label="تا تاریخ" type="date" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_17ddwv2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0000cfe</bpmn:outgoing>
     </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TestCamunda">
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="179" y="99" width="36" height="36" />
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_17o4iug">
+      <bpmndi:BPMNShape id="Participant_0zw7kol_di" bpmnElement="vacationrequest" isHorizontal="true">
+        <dc:Bounds x="152" y="85" width="1043" height="413" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_0x6ir2l_di" bpmnElement="EndEvent_0x6ir2l">
-        <dc:Bounds x="432" y="99" width="36" height="36" />
+      <bpmndi:BPMNShape id="Lane_1bm6x7h_di" bpmnElement="Lane_1bm6x7h" isHorizontal="true">
+        <dc:Bounds x="182" y="85" width="1013" height="157" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_08mft2c_di" bpmnElement="say-hello">
-        <dc:Bounds x="270" y="77" width="100" height="80" />
+      <bpmndi:BPMNShape id="Lane_0otfnty_di" bpmnElement="Lane_0otfnty" isHorizontal="true">
+        <dc:Bounds x="182" y="242" width="1013" height="256" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1fp17al_di" bpmnElement="SequenceFlow_1fp17al">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="270" y="117" />
+      <bpmndi:BPMNShape id="StartEvent_1cnew1s_di" bpmnElement="startProcess">
+        <dc:Bounds x="244" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="232" y="202" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0l0ycf4_di" bpmnElement="decisionMaking" isMarkerVisible="true">
+        <dc:Bounds x="810" y="308" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="814" y="285" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0iujtpq_di" bpmnElement="perceptionReqquest">
+        <dc:Bounds x="588" y="293" width="150" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0381n1u_di" bpmnElement="EndEvent_0nkezcp">
+        <dc:Bounds x="817" y="416" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="793" y="462" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1pbe6ta_di" bpmnElement="Event_1cx407t">
+        <dc:Bounds x="990" y="315" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976" y="358" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1vbnvxt_di" bpmnElement="writeRequest">
+        <dc:Bounds x="369" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17ddwv2_di" bpmnElement="SequenceFlow_17ddwv2">
+        <di:waypoint x="280" y="177" />
+        <di:waypoint x="369" y="177" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_16gzt2m_di" bpmnElement="SequenceFlow_16gzt2m">
-        <di:waypoint x="370" y="117" />
-        <di:waypoint x="432" y="117" />
+      <bpmndi:BPMNEdge id="SequenceFlow_0000cfe_di" bpmnElement="SequenceFlow_0000cfe">
+        <di:waypoint x="469" y="177" />
+        <di:waypoint x="554" y="177" />
+        <di:waypoint x="554" y="333" />
+        <di:waypoint x="588" y="333" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jb05bw_di" bpmnElement="SequenceFlow_0jb05bw">
+        <di:waypoint x="738" y="333" />
+        <di:waypoint x="810" y="333" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_110gnb1_di" bpmnElement="SequenceFlow_110gnb1">
+        <di:waypoint x="835" y="358" />
+        <di:waypoint x="835" y="416" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="838" y="384" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1y6ey5v_di" bpmnElement="Flow_1y6ey5v">
+        <di:waypoint x="860" y="333" />
+        <di:waypoint x="990" y="333" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908" y="315" width="39" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

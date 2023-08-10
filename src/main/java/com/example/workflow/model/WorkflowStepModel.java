@@ -1,22 +1,22 @@
 package com.example.workflow.model;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-//import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class WorkflowStep {
+@AllArgsConstructor
+@NoArgsConstructor
+public class WorkflowStepModel {
     private String taskName;
     private String username;
-    private String roleName;
     private Date inboxEntryDate;
     private Date inboxExitDate;
     private String comment;
